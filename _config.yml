@@ -1,6 +1,7 @@
+remote_theme: freelancer-theme
 lsi: false
 safe: true
-source: [your repo's top level directory]
+source: https://github.com/vsp-sign/MagApps
 incremental: false
 highlighter: rouge
 gist:
