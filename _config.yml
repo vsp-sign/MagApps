@@ -1,4 +1,4 @@
-remote_theme: freelancer-theme
+theme: jekyll-theme-minimal
 lsi: false
 safe: true
 source: https://github.com/vsp-sign/MagApps
