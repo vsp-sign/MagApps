@@ -1,7 +1,7 @@
 theme: jekyll-theme-minimal
 lsi: false
 safe: true
-source: https://github.com/vsp-sign/MagApps
+source: https://github.com/vsp-sign/MagApps/Readme.md
 incremental: false
 highlighter: rouge
 gist:
