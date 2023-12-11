@@ -6,8 +6,11 @@ The code can be edited to alter the calculated data.
 <iframe src="https://trinket.io/embed/glowscript/f7dbcac96e?toggleCode=true&start=result" width="70%" height="400" frameborder="1" marginwidth="0" marginheight="0" allowfullscreen></iframe>  
 -->
 
-![icon](<img width="3" height="2" src="https://github.com/vsp-sign/MagApps/blob/main/FunctionPlot_icon.GIF">) Function Plotter (Read the instructions)
+#### Function Plotter (Read the instructions)
 <iframe src="https://trinket.io/embed/glowscript/2029cfd294?toggleCode=true&start=result&showInstructions=true" width="70%" height="400" frameborder="1" marginwidth="0" marginheight="0" allowfullscreen></iframe> 
+
+#### Zeeman Energy Plotter
+<iframe src="https://trinket.io/embed/glowscript/210e66092f?toggleCode=true&showInstructions=true" width="100%" height="600" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
 
 
 <!--
