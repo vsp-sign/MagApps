@@ -1,4 +1,4 @@
-## Hi this is a collection of simple tinklet based python codes to get by some quick calculations.
+## This is a collection of simple tinklet based python codes to get by some quick calculations.  
 ### The code can be edited to alter the calculated data.
 
 #### Program 1 
