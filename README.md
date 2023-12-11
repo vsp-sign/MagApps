@@ -1,18 +1,19 @@
 ## Hi this is a collection of simple tinklet based python codes to get by some quick calculations.
 ### The code can be edited to alter the calculated data.
 
-#### Program 1 <iframe src="https://trinket.io/embed/glowscript/f7dbcac96e?toggleCode=true&start=result" width="50%" height="200" frameborder="1" marginwidth="0" marginheight="0" allowfullscreen></iframe> 
+#### Program 1 
+<iframe src="https://trinket.io/embed/glowscript/f7dbcac96e?toggleCode=true&start=result" width="70%" height="400" frameborder="1" marginwidth="0" marginheight="0" allowfullscreen></iframe> 
 
 #### Function Plotter (Read the instructions)
-<iframe src="https://trinket.io/embed/glowscript/2029cfd294?toggleCode=true&start=result&showInstructions=true" width="50%" height="200" frameborder="1" marginwidth="0" marginheight="0" allowfullscreen></iframe> |
+<iframe src="https://trinket.io/embed/glowscript/2029cfd294?toggleCode=true&start=result&showInstructions=true" width="70%" height="400" frameborder="1" marginwidth="0" marginheight="0" allowfullscreen></iframe> 
 
 
+<!--
 <table>
 <thead>
 	<tr>
 		<th> program 1 </th>
 		<th>Function Plotter (Read the instructions)</th>
-		<th>Header :</th>
 	</tr>
 </thead>
 <tbody>
@@ -26,4 +27,5 @@
 		<td>Column 5</td>
 	</tr>
 </tbody>
-</table>
+</table> 
+-->
