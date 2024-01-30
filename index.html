@@ -1,0 +1,102 @@
+<html>
+<head>
+    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.css" />
+</head>
+<h4>
+    &lt;a href="page2.html"&gt;Note Shifter&lt;/a&gt;
+</h4>
+<body>
+  
+<gradio-lite>
+import gradio as gr
+def Recorder2Flue(songNotes=str, n=0):
+    """surshifter(songNotes=str, n=0); n is the shifting factor
+
+    The Notations are:     
+    
+    Sur=['P_', 'D_', 'N_', 'S', 'R', 'G', 'M', 'P', 'D', 'N', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 's^', 'r^', 'g^', 'm^', 'p^', 'd^', 'n^', 's*', 'r*', 'g*', 'm*']
+    Note=['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C`', 'D`', 'E`', 'F`', 'G`', 'A`', 'B`', 'C^', 'D^', 'E^', 'F^', 'G^', 'A^', 'B^', 'C*', 'D*', 'E*', 'F*', 'G*', 'A*', 'B*']
+
+    """
+    # First the string sorter function
+    def string_to_list(s):
+        i = 0; result = []
+        while i < len(s):
+            if i+1 < len(s) and (s[i+1] in ['_', '`', '^', '*']):
+                result.append(s[i:i+2]); i += 2
+            else:
+                result.append(s[i]); i += 1
+        return result
+    # stringfunction ends here
+    Sur=['P_', 'D_', 'N_', 'S', 'R', 'G', 'M', 'P', 'D', 'N', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 's^', 'r^', 'g^', 'm^', 'p^', 'd^', 'n^', 's*', 'r*', 'g*', 'm*']
+    Note=['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C`', 'D`', 'E`', 'F`', 'G`', 'A`', 'B`', 'C^', 'D^', 'E^', 'F^', 'G^', 'A^', 'B^', 'C*', 'D*', 'E*', 'F*', 'G*', 'A*', 'B*']
+
+    multiplier=len(songNotes)*2
+    messege="Song Notes Modified"
+    songNotes_unaltered=string_to_list(songNotes)
+    songNotes=string_to_list(songNotes.replace(" ", ""))
+
+
+    Flute=[]
+    FluteShifted=[]
+    for note in songNotes:
+        Flute.append(Sur[Note.index(note)])
+        FluteShifted.append(Sur[(Note.index(note))+n])
+    
+    spaced_list=[]; spaced_list_shifted=[]; w=0;x=0
+    for char1 in songNotes_unaltered:
+        if char1 in [' ', ' ', '        ']:
+            spaced_list.append(char1)
+            spaced_list_shifted.append(char1)
+            w=w+1
+        else:
+            spaced_list.append(Flute[x-w])
+            spaced_list_shifted.append(FluteShifted[x-w])
+        Flutelist = ''.join(spaced_list)
+        FlutelistShifted = ''.join(spaced_list_shifted)
+        x=x+1    
+
+    #output text
+    output_begin=["~"*int(multiplier)+"~"*int(len(messege))]
+    output_middle1=[" "*int((multiplier/2)), "Song Notes Modified"]
+    output_middle2=["~"*int(multiplier)+"~"*int(len(messege))]
+
+    key=["Understatnd the keys:", "\n P_ or C = Lower octave", "\n P or C` = Middle octave", "\n P` or C^ = Upper (3rd) octave"]
+    return f"{output_begin[0]}\n{output_middle1[0]}{output_middle1[1]}\n{output_middle2[0]}\nRecorder notes:\t\t\t {''.join(songNotes_unaltered)}\nFlute notes:\t\t\t\t\t{Flutelist}\nFlute notes shifted:\t{FlutelistShifted} \n{output_begin[0]} \n{key[0]}{key[1]}{key[2]}{key[3]}"
+
+    #Newfunction here
+
+def directconverted(song=str):
+    def string_to_list(s):
+        i = 0; result = []
+        while i < len(s):
+            if i+1 < len(s) and (s[i+1] in ['_', '`', '^', '*']):
+                result.append(s[i:i+2]); i += 2
+            else:
+                result.append(s[i]); i += 1
+        return result
+    # stringfunction ends here
+    Sur=['P_', 'D_', 'N_', 'S', 'R', 'G', 'M', 'P', 'D', 'N', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 's^', 'r^', 'g^', 'm^', 'p^', 'd^', 'n^', 's*', 'r*', 'g*', 'm*']
+    Note=['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C`', 'D`', 'E`', 'F`', 'G`', 'A`', 'B`', 'C^', 'D^', 'E^', 'F^', 'G^', 'A^', 'B^', 'C*', 'D*', 'E*', 'F*', 'G*', 'A*', 'B*']
+
+    SongNotes=string_to_list(song)
+
+    converted=[]
+    for note in SongNotes:
+        if note in Note:
+            converted.append(Sur[Note.index(note)])
+        else:
+            converted.append(note)
+
+    print(''.join(converted))
+    output=''.join(converted)
+    return ''.join(converted)
+
+iface1=gr.Interface (Recorder2Flue, "textbox", "textbox")
+iface2=gr.Interface (directconverted, "textbox", "textbox")
+
+iface2.launch()
+</gradio-lite>
+</body>
+</html>
