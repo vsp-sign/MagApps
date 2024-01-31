@@ -43,12 +43,10 @@ body {
 
 <div style="padding-left:16px">
   <h2>Recorder to Bansuri notes tranposer</h2>
-  <p> <h3>Recorder_to_Flute(song, shifter=0) </h3><br>
-    Default is C major scale; Bansuri is G# base, so all holes closed is a P_<br>
+  <p>The function is: Recorder_to_Flute(songnotes, shifter=0) <br>
+    Default is C major scale; Bansuri is G# base, so all holes closed is a P_.
     If you want to shift the scale, use shifter='n' according to your needs.</p>
 </div>
-<p> <a href="page2.html">Notes Shifter</a>!</p>
-<p> <a href="page3.html">Direct transposer</a>!</p>
 <gradio-lite>
 import gradio as gr
 def Recorder_to_Flute(song, shifter=0):
@@ -83,11 +81,11 @@ def Recorder_to_Flute(song, shifter=0):
     NewSongNotes= ''.join(NewSongNotes)
     
     wavylines=''.join(["~"*int(len(NewSongNotes))+"~"*int(len("Transposed song notes below:"))])
-    Banner=''.join([wavylines, "\n", " "*int((len(NewSongNotes)/2)), "Transposed song notes below:", "\n", wavylines])
+    Banner=''.join([wavylines, "\n", " "*int((len(NewSongNotes))), "Transposed song notes below:", "\n", wavylines])
 
     #print(Banner, NewSongNotes, end='')
     output=[Banner, NewSongNotes, wavylines]
-    return f"{Banner}\n{NewSongNotes}\n{wavylines})"
+    return f"{Banner}\n{NewSongNotes}\n{wavylines}"
          
 iface1=gr.Interface (Recorder_to_Flute, "textbox", "textbox")
 
