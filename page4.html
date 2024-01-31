@@ -35,7 +35,7 @@ def reader(file_paths):
             print(data)
             return data
 
-            def csvReader(file_paths):
+def csvReader(file_output):
     moles=float(Mass)/float(Mw)
     df=pd.read_csv(file_paths)
     df=df[['Comment', 'Time Stamp (sec)', 'Temperature (K)', 'Magnetic Field (Oe)', 'Moment (emu)', 'DC Moment Fixed Ctr (emu)', 'DC Moment Free Ctr (emu)' ]]
