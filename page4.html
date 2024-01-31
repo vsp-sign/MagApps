@@ -1,0 +1,79 @@
+<html>
+<head>
+    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a class="active" href="index.html">Home</a>
+  <a href="page2.html">Notes Shifter</a>
+  <a href="page3.html">Direct transposer</a>
+  <a href="page4.html">Testing Playground</a>
+</div>
+
+<div style="padding-left:16px">
+  <h2>Testing playground for delveloping new apps</h2>
+  <p></p>
+</div>
+
+<gradio-lite theme = "dark">
+import gradio as gr
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def upload_file(files):
+    file_paths = [file.name for file in files]
+    return file_paths
+
+def reader(file_paths):
+    for file_path in file_paths:
+        with open(file_path, 'r') as f:
+            data = f.read()
+            print(data)
+            return data
+def csvReader(file_paths):
+    moles=float(Mass)/float(Mw)
+    df=pd.read_csv(file_paths)
+    df=df[['Comment', 'Time Stamp (sec)', 'Temperature (K)', 'Magnetic Field (Oe)', 'Moment (emu)', 'DC Moment Fixed Ctr (emu)', 'DC Moment Free Ctr (emu)' ]]
+    df['MolarMoment']=df['Moment']/moles
+    df['MolarMoment']=df['MolarMoment'].round(3)  
+    df = df.rename(columns={'Temperature (K)': 'Temp', 'Magnetic Field (Oe)': 'Field', 'Moment (emu)': 'Moment'})
+    df.dropna(subset='MolarMoment', inplace=True)
+    df.dropna(subset='Moment', inplace=True)
+    df['Temp']=df['Temp'].round(3)
+    
+    return df
+inputs=[
+    gr.Dropdown(df.columns, label="Select column to plot")
+]
+
+plot_out=gr.Plot()
+
+    
+with gr.Block() as block1:
+    gr.Markdown("Trial app for data processing")
+    with gr.Row():
+        with gr.Column():
+            inp_file=gr.File()
+            upload_button=gr.UploadButton("Upload file", file_types="file", file_count="multiple")
+            upload_button.upload(upload_file, upload_button, file_output)
+        with gr.Column():
+            Mass=gr.Textbox(placeholder="Mass of the sample")
+            Mw=gr.Textbox(placeholder="Molecular weight of the sample")
+
+    with gr.Row():
+        with gr.Column():
+            gr.Interface(csvReader, [inp_file], "dataframe")
+
+block1.launch()
+
+
+</gradio-lite>
+
+</body>
+</html>
