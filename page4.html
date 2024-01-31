@@ -53,7 +53,7 @@ with gr.Blocks() as block1:
     with gr.Row():
         with gr.Column():
             inp_file=gr.File()
-            upload_button=gr.UploadButton("Upload file", file_types="file", file_count="multiple")
+            upload_button=gr.UploadButton("Upload file", file_types=["image","file"], file_count="multiple")
             upload_button.upload(upload_file, upload_button, file_output)
         with gr.Column():
             Mass=gr.Textbox(placeholder="Mass of the sample")
