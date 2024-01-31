@@ -34,7 +34,8 @@ def reader(file_paths):
             data = f.read()
             print(data)
             return data
-def csvReader(file_paths):
+
+            def csvReader(file_paths):
     moles=float(Mass)/float(Mw)
     df=pd.read_csv(file_paths)
     df=df[['Comment', 'Time Stamp (sec)', 'Temperature (K)', 'Magnetic Field (Oe)', 'Moment (emu)', 'DC Moment Fixed Ctr (emu)', 'DC Moment Free Ctr (emu)' ]]
@@ -59,8 +60,9 @@ with gr.Blocks() as block1:
             Mw=gr.Textbox(placeholder="Molecular weight of the sample")
 
     with gr.Row():
-        with gr.Column():
-            gr.Interface(csvReader, [inp_file], "dataframe")
+        btn=gr.Button("Show Data")
+        btn.click(csvReader, file_output, "dataframe")
+            
 
 block1.launch()
 
