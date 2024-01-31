@@ -44,13 +44,7 @@ def csvReader(file_paths):
     df.dropna(subset='MolarMoment', inplace=True)
     df.dropna(subset='Moment', inplace=True)
     df['Temp']=df['Temp'].round(3)
-    
     return df
-inputs=[
-    gr.Dropdown(df.columns, label="Select column to plot")
-]
-
-plot_out=gr.Plot()
 
     
 with gr.Block() as block1:
