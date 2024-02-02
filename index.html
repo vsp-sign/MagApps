@@ -1,97 +1,179 @@
+<!DOCTYPE html>
 <html>
 <head>
-    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.topnav {
-  overflow: hidden;
-  background-color: #333;
-}
-
-.topnav a {
-  float: left;
-  color: #f2f2f2;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-  font-size: 17px;
-}
-
-.topnav a:hover {
-  background-color: #ddd;
-  color: black;
-}
-
-.topnav a.active {
-  background-color: #04AA6D;
+  <meta charset="UTF-8">
+  <title>Web App</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+  background-color: black;
   color: white;
+  font-family: Arial, sans-serif;
 }
-</style>
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  padding: 20px;
+  margin:auto;
+}
+
+.containersmall {
+  display: flex;
+  justify-content: left;
+  width: 60%;
+  height: auto;
+  padding: 20px;
+  margin:auto;
+}
+
+.column {
+  width: 30%;
+  height: 100%;
+  margin: 0 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #333;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; 
+}
+
+h2 {
+  text-align: center;
+  margin-top: 0;
+}
+
+textarea {
+  width: 100%;
+  height: 80%;
+  resize: none;
+  border: none;
+  background-color: #444;
+  color: white;
+  padding: 10px;
+  margin: 0;
+  box-sizing: border-box;
+  font-size: 16px;
+  top: 10px; 
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+
+p {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 10px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+  </style>
+
+<script>
+function Recorder_to_Flute(song, shifter = 0) {
+    var input = document.getElementById("input").value;
+    var shifter = document.getElementById("shifter").value;
+    var song = input
+
+    function string_to_list(s) {
+        let i = 0;
+        let result = [];
+        while (i < s.length) {
+            if (i + 1 < s.length && ['_', '`', '^', '*'].includes(s[i + 1])) {
+                result.push(s.substring(i, i + 2));
+                i += 2;
+            } else {
+                result.push(s[i]);
+                i += 1;
+            }
+        }
+        return result;
+    }
+
+    const Sur = ['P_', 'D_', 'N_', 'S', 'R', 'G', 'M', 'P', 'D', 'N', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 's^', 'r^', 'g^', 'm^', 'p^', 'd^', 'n^', 's*', 'r*', 'g*', 'm*'];
+    const Note = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C`', 'D`', 'E`', 'F`', 'G`', 'A`', 'B`', 'C^', 'D^', 'E^', 'F^', 'G^', 'A^', 'B^', 'C*', 'D*', 'E*', 'F*', 'G*', 'A*', 'B*'];
+    const shifted_Sur = Sur.slice(shifter).concat(Sur.slice(0, shifter));
+    const Sur_dict = Object.fromEntries(Note.map((note, index) => [note, shifted_Sur[index]]));
+    const SongNotes = string_to_list(song);
+    let NewSongNotes = [];
+    for (const note of SongNotes) {
+        if (note in Sur_dict) {
+            NewSongNotes.push(Sur_dict[note]);
+        } else {
+            NewSongNotes.push(note);
+        }
+    }
+    NewSongNotes = NewSongNotes.join('');
+    
+    var output = document.getElementById("output");
+    output.innerHTML = NewSongNotes.replace(/\n/g, '<br>'); 
+    return ;
+}
+
+function help(){
+    const Sur = ['P_', 'D_', 'N_', 'S', 'R', 'G', 'M', 'P', 'D', 'N', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 's^', 'r^', 'g^', 'm^', 'p^', 'd^', 'n^', 's*', 'r*', 'g*', 'm*'];
+    const Note = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C`', 'D`', 'E`', 'F`', 'G`', 'A`', 'B`', 'C^', 'D^', 'E^', 'F^', 'G^', 'A^', 'B^', 'C*', 'D*', 'E*', 'F*', 'G*', 'A*', 'B*'];
+    help2=document.getElementById("help2");
+    help2.innerHTML = "Here's how the western to Indian notes are mapped:<br>" + Note.join(', ') +
+    "<br>" + Sur.join(', ')
+}
+
+</script>
 </head>
 <body>
-<div class="topnav">
-  <a class="active" href="index.html">Home</a>
-  <a href="page2.html">Notes Shifter</a>
-  <a href="page3.html">Direct transposer</a>
-    <a href="page4.html">Testing Playground</a>
+    <div class="header" align ="center"><h1>Recorder notes to Bansuri converter</h1> </div>
+    <div class="row" align="center"><p>This is a web app that converts your recorder notes to flute notes.</p>
+    </div>
+  <div class="container">
+        <div class="column">
+        <h2>Paste your notes here</h2>
+         <p>You can also shift the notes by a number; provide the number below  <br>Number of notes to shift: <input type="number" id="shifter" value="0" background-color="#444"> <br>
+        <br><textarea id="input" oninput="Recorder_to_Flute()"></textarea></p>
+        </div>
+        <div class="column">
+        <h2>Your converted notes<br><br><br></h2>
+        <p id="output"></p>
+        </div>
+  </div>
+<div class="row"><button type="button" onclick="document.getElementById('help').style.display='block'" > What to see the notes arrangment ?</button><br><br> </div>
+<div id="help" style="display:none">
+    <div>
+        <div class="row">
+            
+                Understatnd the keys: <br>
+            P_ or C = Lower octave <br>
+            P or C` = Middle octave <br>
+            P` or C^ = Upper (3rd) octave<br>
+            P^ or C* = Upper (4th) octave<br>
+            P* or C`^ = Upper (5th) octave<br>
+            
+        </div>
+    </div>
+    
+    <div>
+        <div class="row" id="help2">
+            <br><button type="button" onclick="help()">see the arrangement: </button>
+              <!---<br>
+
+                ['P_', 'D_', 'N_', 'S', 'R', 'G', 'M', 'P', 'D', 'N', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 's^', 'r^', 'g^', 'm^', 'p^', 'd^', 'n^', 's*', 'r*', 'g*', 'm*']<br>
+                ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C`', 'D`', 'E`', 'F`', 'G`', 'A`', 'B`', 'C^', 'D^', 'E^', 'F^', 'G^', 'A^', 'B^', 'C*', 'D*', 'E*', 'F*', 'G*', 'A*', 'B*']  --> 
+        </div>
+    </div>
 </div>
+<div class="footer" align ="center">
+    <p>Default is C major scale; Bansuri is G# base, so all holes closed is a P_</p> 
+    
+    <p>Enjoy ❤️</p> 
 
-<div style="padding-left:16px">
-  <h2>Recorder to Bansuri notes tranposer</h2>
-  <p>The function is: Recorder_to_Flute(songnotes, shifter=0) <br>
-    Default is C major scale; Bansuri is G# base, so all holes closed is a P_.
-    If you want to shift the scale, use shifter='n' according to your needs.</p>
+    <a href="page6.html">Link to the gradio app</a>
 </div>
-<gradio-lite>
-import gradio as gr
-def Recorder_to_Flute(song, shifter=0):
-    '''Recorder_to_Flute(song, shifter=0)
-        Default is C major scale; Bansuri is G# base, so all holes closed is a P_
-        If you want to shift the scale, use shifter='n' according to your needs.
-    '''
-    def string_to_list(s):
-        i = 0; result = []
-        while i < len(s):
-            if i+1 < len(s) and (s[i+1] in ['_', '`', '^', '*']):
-                result.append(s[i:i+2]); i += 2
-            else:
-                result.append(s[i]); i += 1
-        return result
-    
-
-    Sur=['P_', 'D_', 'N_', 'S', 'R', 'G', 'M', 'P', 'D', 'N', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 's^', 'r^', 'g^', 'm^', 'p^', 'd^', 'n^', 's*', 'r*', 'g*', 'm*']
-    Note=['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C`', 'D`', 'E`', 'F`', 'G`', 'A`', 'B`', 'C^', 'D^', 'E^', 'F^', 'G^', 'A^', 'B^', 'C*', 'D*', 'E*', 'F*', 'G*', 'A*', 'B*']
-    
-    shifted_Sur=Sur[shifter:]+Sur[:shifter]
-    Sur_dict=dict(zip(Note, shifted_Sur))
-
-    SongNotes=string_to_list(song)
-
-    NewSongNotes=[]
-    for note in SongNotes:
-        if note in Sur_dict:
-            NewSongNotes.append(Sur_dict.get(note))
-        else:
-            NewSongNotes.append(note)
-    NewSongNotes= ''.join(NewSongNotes)
-    
-    wavylines=''.join(["~"*int(len(NewSongNotes))+"~"*int(len("Transposed song notes below:"))])
-    Banner=''.join([wavylines, "\n", " "*int((len(NewSongNotes))), "Transposed song notes below:", "\n", wavylines])
-
-    #print(Banner, NewSongNotes, end='')
-    output=[Banner, NewSongNotes, wavylines]
-    return f"{Banner}\n{NewSongNotes}\n{wavylines}"
-         
-iface1=gr.Interface (Recorder_to_Flute, "textbox", "textbox")
-
-iface1.launch()
-</gradio-lite>
-
 </body>
 </html>

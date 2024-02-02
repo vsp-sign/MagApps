@@ -1,0 +1,97 @@
+<html>
+<head>
+    <script type="module" crossorigin src="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gradio/lite/dist/lite.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.topnav {
+  overflow: hidden;
+  background-color: #333;
+}
+
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.topnav a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a class="active" href="index.html">Home</a>
+  <a href="page2.html">Notes Shifter</a>
+  <a href="page3.html">Direct transposer</a>
+    <a href="page4.html">Testing Playground</a>
+</div>
+
+<div style="padding-left:16px">
+  <h2>Recorder to Bansuri notes tranposer</h2>
+  <p>The function is: Recorder_to_Flute(songnotes, shifter=0) <br>
+    Default is C major scale; Bansuri is G# base, so all holes closed is a P_.
+    If you want to shift the scale, use shifter='n' according to your needs.</p>
+</div>
+<gradio-lite>
+import gradio as gr
+def Recorder_to_Flute(song, shifter=0):
+    '''Recorder_to_Flute(song, shifter=0)
+        Default is C major scale; Bansuri is G# base, so all holes closed is a P_
+        If you want to shift the scale, use shifter='n' according to your needs.
+    '''
+    def string_to_list(s):
+        i = 0; result = []
+        while i < len(s):
+            if i+1 < len(s) and (s[i+1] in ['_', '`', '^', '*']):
+                result.append(s[i:i+2]); i += 2
+            else:
+                result.append(s[i]); i += 1
+        return result
+    
+
+    Sur=['P_', 'D_', 'N_', 'S', 'R', 'G', 'M', 'P', 'D', 'N', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 'S`', 'R`', 'G`', 'M`', 'P`', 'D`', 'N`', 's^', 'r^', 'g^', 'm^', 'p^', 'd^', 'n^', 's*', 'r*', 'g*', 'm*']
+    Note=['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C`', 'D`', 'E`', 'F`', 'G`', 'A`', 'B`', 'C^', 'D^', 'E^', 'F^', 'G^', 'A^', 'B^', 'C*', 'D*', 'E*', 'F*', 'G*', 'A*', 'B*']
+    
+    shifted_Sur=Sur[shifter:]+Sur[:shifter]
+    Sur_dict=dict(zip(Note, shifted_Sur))
+
+    SongNotes=string_to_list(song)
+
+    NewSongNotes=[]
+    for note in SongNotes:
+        if note in Sur_dict:
+            NewSongNotes.append(Sur_dict.get(note))
+        else:
+            NewSongNotes.append(note)
+    NewSongNotes= ''.join(NewSongNotes)
+    
+    wavylines=''.join(["~"*int(len(NewSongNotes))+"~"*int(len("Transposed song notes below:"))])
+    Banner=''.join([wavylines, "\n", " "*int((len(NewSongNotes))), "Transposed song notes below:", "\n", wavylines])
+
+    #print(Banner, NewSongNotes, end='')
+    output=[Banner, NewSongNotes, wavylines]
+    return f"{Banner}\n{NewSongNotes}\n{wavylines}"
+         
+iface1=gr.Interface (Recorder_to_Flute, "textbox", "textbox")
+
+iface1.launch()
+</gradio-lite>
+
+</body>
+</html>
