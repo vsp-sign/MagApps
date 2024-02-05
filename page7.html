@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dark-themed Webpage</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #container {
+      background-color: #1f1f1f;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+
+    input {
+      padding: 10px;
+      margin: 10px;
+      width: 200px;
+      border: none;
+      background-color: #333;
+      color: #fff;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #output {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="container">
+    <h1>CI roots and Multiplicity calculator</h1>
+    <form id="inputForm">
+      <label for="userInput">Number of d electrons? (between 2-8)</label>
+      <br>
+      <input type="text" id="userInput" placeholder="Type here...">
+      <br>
+      <button type="button" onclick="calculate()">Submit</button>
+    </form>
+    <div id="output">Enter something and click "Submit" to see the result.</div>
+    <script src="./Calulator.js"></script>
+
+    </script>
+
+    <!---<script src="Calulator.js"></script>--->
+  </div>
+
+</body>
+
+</html>
