@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DAT File Magnetization Grapher</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .input-group { margin-bottom: 10px; }
+        .input-group label { display: inline-block; width: 120px; }
+        .input-group input[type="number"] { width: 100px; }
+        #chartContainer {
+            width: 800px;
+            height: 500px;
+            margin-top: 30px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload MPMS .dat File for Magnetic Data Analysis</h1>
+
+    <div class="input-group">
+        <label for="massInput">Mass (g):</label>
+        <input type="number" id="massInput" value="1.0" step="any">
+    </div>
+    <div class="input-group">
+        <label for="molecularWeightInput">Molecular Weight:</label>
+        <input type="number" id="molecularWeightInput" value="100.0" step="any">
+    </div>
+        <div class="input-group">
+        <label>Which instrument:</label>
+        <input type="radio" id="instrumentMPMS" name="instrument" value="MPMS" checked>
+        <label for="instrumentMPMS">MPMS</label>
+        <input type="radio" id="instrumentPPMS" name="instrument" value="PPMS">
+        <label for="instrumentPPMS">PPMS</label>
+    </div>
+
+    <div class="input-group">
+        <label for="datFileUploader">Upload .DAT File:</label>
+        <input type="file" id="datFileUploader" accept=".dat,.csv">
+        <p><small>Expected CSV-like .dat file. Will skip first few lines. Looking for columns: 'Temperature', 'Moment (EMU)', 'Field'.</small></p>
+    </div>
+
+    <div id="chartContainer">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        let myChartInstance = null; // To hold the chart instance for updates
+
+        // Event listener for file upload
+        document.getElementById('datFileUploader').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const fileContents = e.target.result;
+                    processDataAndGraph(fileContents);
+                };
+
+                reader.onerror = function(e) {
+                    console.error("Error reading file:", e);
+                    alert("Could not read the file. Please check console for details.");
+                };
+
+                reader.readAsText(file);
+            }
+        });
+
+        function processDataAndGraph(dataString) {
+            const mass = parseFloat(document.getElementById('massInput').value);
+            const molecularWeight = parseFloat(document.getElementById('molecularWeightInput').value);
+            const instrumentMPMS = document.getElementById('instrumentMPMS');
+            const instrumentPPMS = document.getElementById('instrumentPPMS');
+
+            let linesToSkip;
+            if (instrumentMPMS.checked) {
+                linesToSkip = 40;
+            } else if (instrumentPPMS.checked) {
+                linesToSkip = 33;
+            } else {
+                // Fallback or error if neither is selected (though 'checked' handles default)
+                alert("Please select an instrument type (MPMS or PPMS).");
+                return;
+            }
+
+            if (isNaN(mass) || mass <= 0) {
+                alert("Please enter a valid Mass (must be a positive number).");
+                return;
+            }
+            if (isNaN(molecularWeight) || molecularWeight <= 0) {
+                alert("Please enter a valid Molecular Weight (must be a positive number).");
+                return;
+            }
+
+            const lines = dataString.split('\n');
+
+            // // Use the dynamically determined linesToSkip
+            const dataLines = lines.slice(linesToSkip);
+
+            if (dataLines.length === 0) {
+                alert("No data found after skipping 40 header lines. Please check your file.");
+                return;
+            }
+
+            // Attempt to find the header line (first non-empty line after skip)
+            let headerLine = null;
+            let headerIndex = -1;
+            for(let i = 0; i < dataLines.length; i++) {
+                if(dataLines[i].trim() !== '') {
+                    headerLine = dataLines[i];
+                    headerIndex = i;
+                    break;
+                }
+            }
+
+            if (!headerLine) {
+                alert("Could not find a header line or any data after skipping 40 lines.");
+                return;
+            }
+
+            const headers = headerLine.split(',').map(h => h.trim()); // Assuming CSV, trim whitespace
+            
+
+            // Find column indices
+            const tempColIndex = headers.findIndex(h => h === 'Temperature (K)' || h.toLowerCase() === 'temperature (K)' || h.toLowerCase() === 'temperature');
+            const momentColIndex = headers.findIndex(h => h === 'Moment (emu)' || h.toLowerCase() === 'moment (emu)'); // Be flexible
+            const fieldColIndex = headers.findIndex(h => h === 'Magnetic Field (Oe)');
+
+            if (tempColIndex === -1 || momentColIndex === -1 || fieldColIndex === -1) {
+                alert("Required columns 'Temperature (K)', 'Moment (emu)' (or 'Moment'), and 'Magnetic Field (Oe)' not found in the data header. Please check column names.");
+                console.error("Headers found:", headers);
+                return;
+            }
+            alert("Headers found"); // Debugging info
+            
+            const processedData = [];
+
+            // Iterate through data lines (starting from the line *after* the header)
+            for (let i = headerIndex + 1; i < dataLines.length; i++) {
+                const line = dataLines[i].trim();
+                if (line === '') continue; // Skip empty lines
+
+                const parts = line.split(','); // Assuming CSV
+
+                if (parts.length > Math.max(tempColIndex, momentColIndex, fieldColIndex)) {
+                    const temperature = parseFloat(parts[tempColIndex]);
+                    const moment = parseFloat(parts[momentColIndex]);
+                    const field = parseFloat(parts[fieldColIndex]);
+
+                    // Validate parsed numbers
+                    if (!isNaN(temperature) && !isNaN(moment) && !isNaN(field) && field !== 0) {
+                        // Calculate MM: MM = (Moment / MagneticField) / (Mass / MolecularWeight)
+                        let xDia = -molecularWeight / 2e6; // Diamagnetic Correction, assuming molecularWeight is the molecular weight in g/mol
+                        const MM = ((moment / field)*molecularWeight*1000 / mass) - xDia;
+                        // Calculate MM*Temperature
+                        const MM_Temp = MM * temperature;
+
+                        processedData.push({ temperature: temperature, mm_temp: MM_Temp });
+                    } else if (field === 0) {
+                        console.warn(`Skipping data point due to Zero Field at line: ${i + 40 + 1} (Temperature: ${temperature}, Moment: ${moment}, Field: ${field})`);
+                    } else {
+                        console.warn(`Skipping malformed data line at original line: ${i + 40 + 1}. Values: Temperature=${parts[tempColIndex]}, Moment=${parts[momentColIndex]}, Field=${parts[fieldColIndex]}`);
+                    }
+                } else {
+                     console.warn(`Skipping incomplete data line at original line: ${i + 40 + 1}. Not enough columns.`);
+                }
+            }
+
+            if (processedData.length === 0) {
+                alert("No valid data points could be extracted and calculated. Check your file format and content.");
+                return;
+            }
+
+            // Sort data by Temperature for a clean line graph
+            processedData.sort((a, b) => a.temperature - b.temperature);
+
+            createChart(processedData);
+        }
+
+        function createChart(data) {
+            const ctx = document.getElementById('myChart').getContext('2d');
+
+            const chartLabels = data.map(point => point.temperature.toFixed(2)); // Use temperature as X-axis labels
+            const chartValues = data.map(point => point.mm_temp); // MM*Temperature as Y-axis values
+
+            if (myChartInstance) {
+                myChartInstance.destroy(); // Destroy previous chart if it exists
+            }
+
+            myChartInstance = new Chart(ctx, {
+                type: 'line', // Line chart is suitable for this type of data
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Molar Chi*T',
+                        data: chartValues,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1, // Smooth the line a bit
+                        pointRadius: 3,
+                        pointBackgroundColor: 'rgba(75, 192, 192, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'ChiT Plot'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Temp: ${context.label}°C, X*T: ${context.formattedValue}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Temperature (K)',
+                                font: { size: 14, weight: 'bold' }
+                            },
+                            type: 'linear', // Use linear scale for numerical X-axis
+                            ticks: {
+                                callback: function(value, index, ticks) {
+                                    // Only show labels for every Nth tick to avoid clutter on dense data
+                                    if (data.length > 20 && index % Math.ceil(data.length / 10) !== 0) {
+                                        return '';
+                                    }
+                                    return value;
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true, // MM*T might not always start at zero, consider removing if your data dictates
+                            title: {
+                                display: true,
+                                text: 'Chi*T (cm3 K /mol)',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
